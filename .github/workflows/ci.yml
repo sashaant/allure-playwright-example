@@ -27,37 +27,9 @@ jobs:
         retention-days: 30
     
   
-    - uses: actions/upload-artifact@master
+     - name: Send Results and Generate Allure Report
+      uses: sashaant/send-to-allure-server-action@1
+      # always() needed because we want report for failed tests as well
+      if: ${{ always() }}
       with:
-        name: allure-results
-        path: allure-results
-        retention-days: 20
-        
-    - name: Get Allure history
-      uses: actions/checkout@v2
-      if: always()
-      continue-on-error: true
-      with:
-        ref: gh-pages
-        path: gh-pages
-    
-    - name: Test marketplace action
-      uses: simple-elf/allure-report-action@master
-      if: always()
-      id: allure-report
-      with:
-        allure_results: allure-results
-        gh_pages: gh-pages
-        allure_report: allure-report
-        allure_history: allure-history
-        keep_reports: 20
-
-    - name: Deploy report to Github Pages
-      if: always()
-      uses: peaceiris/actions-gh-pages@v2
-      env:
-        PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PUBLISH_BRANCH: gh-pages
-        PUBLISH_DIR: allure-history
-
-
+        allure-server-url: 'http://my-allure-server.com:5001/'
